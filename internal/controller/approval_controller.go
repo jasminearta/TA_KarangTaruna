@@ -9,16 +9,38 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type RejectRequest struct {
+	Catatan string `json:"catatan"`
+}
+
 func ApproveKegiatan(c *gin.Context) {
-
 	idParam := c.Param("id")
-	id, _ := strconv.Atoi(idParam)
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "id tidak valid",
+		})
+		return
+	}
 
-	err := usecases.UpdateStatusKegiatan(uint(id), "approved")
+	approvedBy := c.MustGet("user_id").(uint)
 
+	kegiatan, err := usecases.ApproveKegiatanUsecase(uint(id), approvedBy)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
+		})
+		return
+	}
+
+	err = usecases.CreateNotification(
+		kegiatan.UserID,
+		"Kegiatan Disetujui",
+		"Kegiatan '"+kegiatan.Judul+"' telah disetujui oleh ketua",
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "status berubah, tapi notifikasi gagal dibuat: " + err.Error(),
 		})
 		return
 	}
@@ -29,12 +51,26 @@ func ApproveKegiatan(c *gin.Context) {
 }
 
 func RejectKegiatan(c *gin.Context) {
-
 	idParam := c.Param("id")
-	id, _ := strconv.Atoi(idParam)
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "id tidak valid",
+		})
+		return
+	}
 
-	err := usecases.UpdateStatusKegiatan(uint(id), "rejected")
+	var req RejectRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
+	approvedBy := c.MustGet("user_id").(uint)
+
+	kegiatan, err := usecases.RejectKegiatanUsecase(uint(id), approvedBy, req.Catatan)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
@@ -42,7 +78,101 @@ func RejectKegiatan(c *gin.Context) {
 		return
 	}
 
+	err = usecases.CreateNotification(
+		kegiatan.UserID,
+		"Kegiatan Ditolak",
+		"Kegiatan '"+kegiatan.Judul+"' ditolak oleh ketua",
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "status berubah, tapi notifikasi gagal dibuat: " + err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Kegiatan berhasil di-reject",
+	})
+}
+
+func ApproveInovasi(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "id tidak valid",
+		})
+		return
+	}
+
+	approvedBy := c.MustGet("user_id").(uint)
+
+	inovasi, err := usecases.ApproveInovasiUsecase(uint(id), approvedBy)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	err = usecases.CreateNotification(
+		inovasi.UserID,
+		"Inovasi Disetujui",
+		"Inovasi '"+inovasi.Judul+"' telah disetujui oleh ketua",
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "status berubah, tapi notifikasi gagal dibuat: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Inovasi berhasil di-approve",
+	})
+}
+
+func RejectInovasi(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "id tidak valid",
+		})
+		return
+	}
+
+	var req RejectRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	approvedBy := c.MustGet("user_id").(uint)
+
+	inovasi, err := usecases.RejectInovasiUsecase(uint(id), approvedBy, req.Catatan)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	err = usecases.CreateNotification(
+		inovasi.UserID,
+		"Inovasi Ditolak",
+		"Inovasi '"+inovasi.Judul+"' ditolak oleh ketua",
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "status berubah, tapi notifikasi gagal dibuat: " + err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Inovasi berhasil di-reject",
 	})
 }

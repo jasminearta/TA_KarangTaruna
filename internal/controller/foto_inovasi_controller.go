@@ -11,31 +11,31 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func UploadFotoKegiatan(c *gin.Context) {
+func UploadFotoInovasi(c *gin.Context) {
 	idParam := c.Param("id")
-	kegiatanID, _ := strconv.Atoi(idParam)
+	inovasiID, _ := strconv.Atoi(idParam)
 
 	userID := c.MustGet("user_id").(uint)
 
-	var kegiatan entities.Kegiatan
-	err := database.DB.First(&kegiatan, kegiatanID).Error
+	var inovasi entities.Inovasi
+	err := database.DB.First(&inovasi, inovasiID).Error
 	if err != nil {
 		c.JSON(404, gin.H{
-			"error": "kegiatan tidak ditemukan",
+			"error": "inovasi tidak ditemukan",
 		})
 		return
 	}
 
-	if kegiatan.UserID != userID {
+	if inovasi.UserID != userID {
 		c.JSON(403, gin.H{
-			"error": "anda tidak boleh upload foto kegiatan orang lain",
+			"error": "anda tidak boleh upload foto inovasi orang lain",
 		})
 		return
 	}
 
-	if kegiatan.Status != "approved" {
+	if inovasi.Status != "approved" {
 		c.JSON(400, gin.H{
-			"error": "foto kegiatan hanya bisa diupload setelah kegiatan disetujui",
+			"error": "foto inovasi hanya bisa diupload setelah inovasi disetujui",
 		})
 		return
 	}
@@ -59,32 +59,29 @@ func UploadFotoKegiatan(c *gin.Context) {
 		return
 	}
 
-	foto, err := usecases.CreateFotoKegiatan(uint(kegiatanID), path)
+	foto, err := usecases.CreateFotoInovasi(uint(inovasiID), path)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 
-	var result entities.FotoKegiatan
+	var result entities.FotoInovasi
 	database.DB.
-		Model(&entities.FotoKegiatan{}).
-		Preload("Kegiatan").
-		Preload("Kegiatan.User").
-		Preload("Kegiatan.Kategori").
+		Model(&entities.FotoInovasi{}).
 		Where("id = ?", foto.ID).
 		First(&result)
 
 	c.JSON(200, gin.H{
-		"message": "Foto kegiatan berhasil upload",
+		"message": "Foto inovasi berhasil upload",
 		"data":    result,
 	})
 }
 
-func GetFotoKegiatan(c *gin.Context) {
+func GetFotoInovasi(c *gin.Context) {
 	idParam := c.Param("id")
-	kegiatanID, _ := strconv.Atoi(idParam)
+	inovasiID, _ := strconv.Atoi(idParam)
 
-	foto, err := usecases.GetFotoByKegiatan(uint(kegiatanID))
+	foto, err := usecases.GetFotoByInovasi(uint(inovasiID))
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

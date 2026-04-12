@@ -1,8 +1,6 @@
 package usecase
 
 import (
-	"time"
-
 	"ta-karangtaruna/database"
 	"ta-karangtaruna/internal/entities"
 )
@@ -10,20 +8,20 @@ import (
 func CreateKegiatan(
 	judul string,
 	deskripsi string,
-	tanggal string,
+	tanggalBerjalan string,
+	tanggalDiajukan string,
 	kategoriID uint,
 	userID uint,
 ) (entities.Kegiatan, error) {
 
-	parsedDate, _ := time.Parse("2006-01-02", tanggal)
-
 	kegiatan := entities.Kegiatan{
-		Judul:      judul,
-		Deskripsi:  deskripsi,
-		Tanggal:    parsedDate,
-		KategoriID: kategoriID,
-		UserID:     userID,
-		Status:     "pending",
+		Judul:           judul,
+		Deskripsi:       deskripsi,
+		TanggalBerjalan: tanggalBerjalan,
+		TanggalDiajukan: tanggalDiajukan,
+		KategoriID:      kategoriID,
+		UserID:          userID,
+		Status:          "pending",
 	}
 
 	err := database.DB.Create(&kegiatan).Error

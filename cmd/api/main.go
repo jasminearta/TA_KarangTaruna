@@ -10,25 +10,21 @@ import (
 )
 
 func main() {
-
-	// CONNECT DATABASE
 	database.ConnectDatabase()
 
-	// AUTO MIGRATE
 	database.DB.AutoMigrate(
 		&entities.User{},
 		&entities.Kategori{},
+		&entities.Inovasi{},
 		&entities.Kegiatan{},
-		&entities.Komentar{},
-		&entities.Dokumentasi{},
+		&entities.FotoKegiatan{},
+		&entities.Notification{},
+		&entities.ApprovalLog{},
+		&entities.FotoInovasi{},
 	)
 
 	r := gin.Default()
 	r.Static("/uploads", "./uploads")
-
-	// ========================
-	// PUBLIC ROUTES
-	// ========================
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -40,48 +36,74 @@ func main() {
 	r.POST("/register-ketua", controllers.RegisterKetua)
 	r.POST("/login", controllers.Login)
 
-	// publik bisa lihat kegiatan
-	r.GET("/kegiatan", controllers.GetAllKegiatan)
-	r.GET("/kegiatan/:id/komentar", controllers.GetKomentar)
+	// ========================
+	// PUBLIC ROUTES
+	// ========================
 
-	r.GET("/kegiatan/:id/dokumentasi", controllers.GetDokumentasi)
+	r.GET("/kegiatan", controllers.GetAllKegiatan)
+	r.GET("/kegiatan/:id", controllers.GetDetailKegiatan)
+	r.GET("/kegiatan/:id/foto", controllers.GetFotoKegiatan)
+
+	r.GET("/inovasi", controllers.GetAllInovasi)
+	r.GET("/inovasi/:id", controllers.GetDetailInovasi)
+	r.GET("/inovasi/:id/foto", controllers.GetFotoInovasi)
 
 	// ========================
-	// USER ROUTES (LOGIN REQUIRED)
+	// AUTH ROUTES (LOGIN REQUIRED)
 	// ========================
 
 	api := r.Group("/api")
 	api.Use(middleware.AuthMiddleware())
 	{
 		api.GET("/profile", controllers.GetProfile)
+		api.PUT("/profile", controllers.UpdateProfile)
+		api.PUT("/profile/password", controllers.ChangePassword)
+		api.POST("/profile/foto", controllers.UploadFotoProfile)
 
-		// anggota membuat kegiatan
-		api.POST("/kegiatan", controllers.CreateKegiatan)
-
-		// kegiatan milik user login
-		api.GET("/kegiatan-saya", controllers.GetKegiatanSaya)
-		api.POST("/kegiatan/:id/komentar", controllers.CreateKomentar)
-
-		api.POST("/kegiatan/:id/dokumentasi", controllers.UploadDokumentasi)
+		api.GET("/notifications", controllers.GetNotifications)
+		api.PATCH("/notifications/:id/read", controllers.ReadNotification)
 	}
 
 	// ========================
-	// KETUA ROUTES
+	// KETUA DIVISI ROUTES
 	// ========================
 
-	ketua := r.Group("/api/ketua")
-	ketua.Use(middleware.AuthMiddleware(), middleware.OnlyKetua())
+	ketuaDivisi := r.Group("/api")
+	ketuaDivisi.Use(middleware.AuthMiddleware(), middleware.OnlyKetuaDivisi())
 	{
-		ketua.GET("/dashboard", controllers.GetDashboardKetua)
+		ketuaDivisi.POST("/kegiatan", controllers.CreateKegiatan)
+		ketuaDivisi.GET("/kegiatan-saya", controllers.GetKegiatanSaya)
+		ketuaDivisi.PUT("/kegiatan/:id", controllers.UpdateKegiatan)
+		ketuaDivisi.POST("/kegiatan/:id/foto", controllers.UploadFotoKegiatan)
+		ketuaDivisi.DELETE("/kegiatan/:id", controllers.DeleteKegiatan)
 
-		// melihat semua user
-		ketua.GET("/users", controllers.GetAllUsers)
+		ketuaDivisi.POST("/inovasi", controllers.CreateInovasi)
+		ketuaDivisi.GET("/inovasi-saya", controllers.GetInovasiSaya)
+		ketuaDivisi.PUT("/inovasi/:id", controllers.UpdateInovasi)
+		ketuaDivisi.DELETE("/inovasi/:id", controllers.DeleteInovasi)
+		ketuaDivisi.POST("/inovasi/:id/foto", controllers.UploadFotoInovasi)
+	}
 
-		// melihat semua kegiatan
-		ketua.GET("/kegiatan", controllers.GetAllKegiatanKetua)
-		ketua.GET("/kegiatan/user/:id", controllers.GetKegiatanByUser)
-		ketua.PATCH("/kegiatan/:id/approve", controllers.ApproveKegiatan)
-		ketua.PATCH("/kegiatan/:id/reject", controllers.RejectKegiatan)
+	// ========================
+	// KETUA UMUM ROUTES
+	// ========================
+
+	ketuaUmum := r.Group("/api/ketua")
+	ketuaUmum.Use(middleware.AuthMiddleware(), middleware.OnlyKetuaUmum())
+	{
+		ketuaUmum.GET("/dashboard", controllers.GetDashboardKetua)
+
+		ketuaUmum.GET("/users", controllers.GetAllUsers)
+
+		ketuaUmum.GET("/kegiatan", controllers.GetAllKegiatanKetua)
+		ketuaUmum.GET("/kegiatan/user/:id", controllers.GetKegiatanByUser)
+		ketuaUmum.PATCH("/kegiatan/:id/approve", controllers.ApproveKegiatan)
+		ketuaUmum.PATCH("/kegiatan/:id/reject", controllers.RejectKegiatan)
+
+		ketuaUmum.GET("/inovasi", controllers.GetAllInovasiKetua)
+		ketuaUmum.GET("/inovasi/user/:id", controllers.GetInovasiByUser)
+		ketuaUmum.PATCH("/inovasi/:id/approve", controllers.ApproveInovasi)
+		ketuaUmum.PATCH("/inovasi/:id/reject", controllers.RejectInovasi)
 	}
 
 	r.Run(":8080")

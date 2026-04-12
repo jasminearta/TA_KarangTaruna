@@ -3,9 +3,10 @@ package entities
 type User struct {
 	ID       uint   `gorm:"primaryKey" json:"id"`
 	Nama     string `json:"nama"`
-	Email    string `gorm:"unique" json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"-"`
-	Role     string `json:"-"`
+	Foto     string `json:"foto"`
+	Role     string `json:"role"`
 }
 
 func (User) TableName() string {

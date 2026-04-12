@@ -1,20 +1,18 @@
 package entities
 
-import (
-	"time"
-)
-
 type Kegiatan struct {
-	ID         uint   `gorm:"primaryKey"`
-	UserID     uint   `gorm:"not null"`
-	KategoriID uint   `gorm:"not null"`
-	Judul      string `gorm:"type:varchar(255);not null"`
-	Deskripsi  string `gorm:"type:text"`
-	Tanggal    time.Time
-	Status     string `gorm:"type:enum('Pending','Approved','Rejected');default:'Pending'"`
+	ID              uint   `gorm:"primaryKey" json:"id"`
+	UserID          uint   `json:"user_id"`
+	KategoriID      uint   `json:"kategori_id"`
+	Judul           string `json:"judul"`
+	Deskripsi       string `json:"deskripsi"`
+	TanggalBerjalan string `json:"tanggal_berjalan"`
+	TanggalDiajukan string `json:"tanggal_diajukan"`
+	Status          string `json:"status"`
 
-	User     User     `gorm:"foreignKey:UserID"`
-	Kategori Kategori `gorm:"foreignKey:KategoriID"`
+	User         User           `gorm:"foreignKey:UserID" json:"user"`
+	Kategori     Kategori       `gorm:"foreignKey:KategoriID" json:"kategori"`
+	FotoKegiatan []FotoKegiatan `gorm:"foreignKey:KegiatanID" json:"foto_kegiatan"`
 }
 
 func (Kegiatan) TableName() string {

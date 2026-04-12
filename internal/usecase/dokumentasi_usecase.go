@@ -5,27 +5,22 @@ import (
 	"ta-karangtaruna/internal/entities"
 )
 
-func CreateDokumentasi(kegiatanID uint, fileURL string) (entities.Dokumentasi, error) {
-
-	dokumentasi := entities.Dokumentasi{
+func CreateFotoKegiatan(kegiatanID uint, fileURL string) (entities.FotoKegiatan, error) {
+	foto := entities.FotoKegiatan{
 		KegiatanID: kegiatanID,
 		FileURL:    fileURL,
 	}
 
-	err := database.DB.Create(&dokumentasi).Error
-
-	return dokumentasi, err
+	err := database.DB.Create(&foto).Error
+	return foto, err
 }
-func GetDokumentasiByKegiatan(kegiatanID uint) ([]entities.Dokumentasi, error) {
 
-	var docs []entities.Dokumentasi
+func GetFotoByKegiatan(kegiatanID uint) ([]entities.FotoKegiatan, error) {
+	var foto []entities.FotoKegiatan
 
 	err := database.DB.
-		Preload("Kegiatan").
-		Preload("Kegiatan.User").
-		Preload("Kegiatan.Kategori").
 		Where("kegiatan_id = ?", kegiatanID).
-		Find(&docs).Error
+		Find(&foto).Error
 
-	return docs, err
+	return foto, err
 }
