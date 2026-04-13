@@ -11,6 +11,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Upload foto inovasi
+// @Description Upload foto inovasi setelah inovasi disetujui
+// @Tags Ketua Divisi Inovasi
+// @Security BearerAuth
+// @Accept mpfd
+// @Produce json
+// @Param id path int true "ID Inovasi"
+// @Param file formData file true "File foto inovasi"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/inovasi/{id}/foto [post]
 func UploadFotoInovasi(c *gin.Context) {
 	idParam := c.Param("id")
 	inovasiID, _ := strconv.Atoi(idParam)
@@ -77,6 +89,14 @@ func UploadFotoInovasi(c *gin.Context) {
 	})
 }
 
+// @Summary Get foto inovasi
+// @Description Mengambil daftar foto inovasi berdasarkan ID inovasi
+// @Tags Public Inovasi
+// @Produce json
+// @Param id path int true "ID Inovasi"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /inovasi/{id}/foto [get]
 func GetFotoInovasi(c *gin.Context) {
 	idParam := c.Param("id")
 	inovasiID, _ := strconv.Atoi(idParam)

@@ -15,6 +15,291 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/inovasi": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Ketua divisi membuat pengajuan inovasi",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Divisi Inovasi"
+                ],
+                "summary": "Create inovasi",
+                "parameters": [
+                    {
+                        "description": "Data create inovasi",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateInovasiRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/inovasi-saya": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil daftar inovasi milik ketua divisi",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Divisi Inovasi"
+                ],
+                "summary": "Get inovasi saya",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search judul",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategori ID",
+                        "name": "kategori",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status: pending, approved, rejected",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort: terbaru atau terlama",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/inovasi/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengubah data inovasi milik ketua divisi selama status masih pending",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Divisi Inovasi"
+                ],
+                "summary": "Update inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Inovasi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Data update inovasi",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.CreateInovasiRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menghapus inovasi milik ketua divisi selama status masih pending",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Divisi Inovasi"
+                ],
+                "summary": "Delete inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Inovasi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/inovasi/{id}/foto": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Upload foto inovasi setelah inovasi disetujui",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Divisi Inovasi"
+                ],
+                "summary": "Upload foto inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Inovasi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "File foto inovasi",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/kegiatan": {
             "post": {
                 "security": [
@@ -259,6 +544,229 @@ const docTemplate = `{
                         "name": "file",
                         "in": "formData",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ketua/inovasi": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil semua inovasi untuk ketua umum",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Umum Inovasi"
+                ],
+                "summary": "Get all inovasi for ketua umum",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search judul",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategori ID",
+                        "name": "kategori",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Status: pending, approved, rejected",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort: terbaru atau terlama",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ketua/inovasi/user/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil inovasi berdasarkan user tertentu",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Umum Inovasi"
+                ],
+                "summary": "Get inovasi by user",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID User",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ketua/inovasi/{id}/approve": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menyetujui pengajuan inovasi",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Umum Inovasi"
+                ],
+                "summary": "Approve inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Inovasi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/ketua/inovasi/{id}/reject": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Menolak pengajuan inovasi disertai catatan",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Umum Inovasi"
+                ],
+                "summary": "Reject inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Inovasi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Catatan penolakan",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controllers.RejectRequest"
+                        }
                     }
                 ],
                 "responses": {
@@ -775,6 +1283,140 @@ const docTemplate = `{
                 }
             }
         },
+        "/inovasi": {
+            "get": {
+                "description": "Mengambil daftar inovasi publik yang berstatus approved",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Inovasi"
+                ],
+                "summary": "Get all public inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Page",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search judul",
+                        "name": "search",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Kategori ID",
+                        "name": "kategori",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Sort: terbaru atau terlama",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/inovasi/{id}": {
+            "get": {
+                "description": "Mengambil detail inovasi publik berdasarkan ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Inovasi"
+                ],
+                "summary": "Get detail inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Inovasi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/inovasi/{id}/foto": {
+            "get": {
+                "description": "Mengambil daftar foto inovasi berdasarkan ID inovasi",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Public Inovasi"
+                ],
+                "summary": "Get foto inovasi",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Inovasi",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/kegiatan": {
             "get": {
                 "description": "Mengambil daftar kegiatan publik yang berstatus approved",
@@ -1051,6 +1693,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password_lama": {
+                    "type": "string"
+                }
+            }
+        },
+        "controllers.CreateInovasiRequest": {
+            "type": "object",
+            "properties": {
+                "deskripsi": {
+                    "type": "string"
+                },
+                "judul": {
+                    "type": "string"
+                },
+                "kategori_id": {
+                    "type": "integer"
+                },
+                "tanggal_diajukan": {
                     "type": "string"
                 }
             }

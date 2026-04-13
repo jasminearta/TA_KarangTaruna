@@ -117,6 +117,16 @@ func RejectKegiatan(c *gin.Context) {
 	})
 }
 
+// @Summary Approve inovasi
+// @Description Menyetujui pengajuan inovasi
+// @Tags Ketua Umum Inovasi
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID Inovasi"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/inovasi/{id}/approve [patch]
 func ApproveInovasi(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -154,6 +164,18 @@ func ApproveInovasi(c *gin.Context) {
 	})
 }
 
+// @Summary Reject inovasi
+// @Description Menolak pengajuan inovasi disertai catatan
+// @Tags Ketua Umum Inovasi
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "ID Inovasi"
+// @Param request body controllers.RejectRequest true "Catatan penolakan"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/inovasi/{id}/reject [patch]
 func RejectInovasi(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

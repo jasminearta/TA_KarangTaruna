@@ -16,6 +16,17 @@ type CreateInovasiRequest struct {
 	KategoriID      uint   `json:"kategori_id"`
 }
 
+// @Summary Create inovasi
+// @Description Ketua divisi membuat pengajuan inovasi
+// @Tags Ketua Divisi Inovasi
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body controllers.CreateInovasiRequest true "Data create inovasi"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/inovasi [post]
 func CreateInovasi(c *gin.Context) {
 	var req CreateInovasiRequest
 
@@ -78,6 +89,18 @@ func GetInovasi(c *gin.Context) {
 	})
 }
 
+// @Summary Get all public inovasi
+// @Description Mengambil daftar inovasi publik yang berstatus approved
+// @Tags Public Inovasi
+// @Produce json
+// @Param page query int false "Page"
+// @Param limit query int false "Limit"
+// @Param search query string false "Search judul"
+// @Param kategori query string false "Kategori ID"
+// @Param sort query string false "Sort: terbaru atau terlama"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /inovasi [get]
 func GetAllInovasi(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	limitStr := c.DefaultQuery("limit", "100")
@@ -106,6 +129,20 @@ func GetAllInovasi(c *gin.Context) {
 	})
 }
 
+// @Summary Get inovasi saya
+// @Description Mengambil daftar inovasi milik ketua divisi
+// @Tags Ketua Divisi Inovasi
+// @Security BearerAuth
+// @Produce json
+// @Param page query int false "Page"
+// @Param limit query int false "Limit"
+// @Param search query string false "Search judul"
+// @Param kategori query string false "Kategori ID"
+// @Param status query string false "Status: pending, approved, rejected"
+// @Param sort query string false "Sort: terbaru atau terlama"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/inovasi-saya [get]
 func GetInovasiSaya(c *gin.Context) {
 	userID := c.MustGet("user_id").(uint)
 
@@ -160,6 +197,20 @@ func GetInovasiSaya(c *gin.Context) {
 	})
 }
 
+// @Summary Get all inovasi for ketua umum
+// @Description Mengambil semua inovasi untuk ketua umum
+// @Tags Ketua Umum Inovasi
+// @Security BearerAuth
+// @Produce json
+// @Param page query int false "Page"
+// @Param limit query int false "Limit"
+// @Param search query string false "Search judul"
+// @Param kategori query string false "Kategori ID"
+// @Param status query string false "Status: pending, approved, rejected"
+// @Param sort query string false "Sort: terbaru atau terlama"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/inovasi [get]
 func GetAllInovasiKetua(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	limitStr := c.DefaultQuery("limit", "100")
@@ -213,6 +264,15 @@ func GetAllInovasiKetua(c *gin.Context) {
 	})
 }
 
+// @Summary Get inovasi by user
+// @Description Mengambil inovasi berdasarkan user tertentu
+// @Tags Ketua Umum Inovasi
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID User"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/inovasi/user/{id} [get]
 func GetInovasiByUser(c *gin.Context) {
 	userIDParam := c.Param("id")
 	userID, _ := strconv.Atoi(userIDParam)
@@ -229,6 +289,14 @@ func GetInovasiByUser(c *gin.Context) {
 	})
 }
 
+// @Summary Get detail inovasi
+// @Description Mengambil detail inovasi publik berdasarkan ID
+// @Tags Public Inovasi
+// @Produce json
+// @Param id path int true "ID Inovasi"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /inovasi/{id} [get]
 func GetDetailInovasi(c *gin.Context) {
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)
@@ -245,6 +313,18 @@ func GetDetailInovasi(c *gin.Context) {
 	})
 }
 
+// @Summary Update inovasi
+// @Description Mengubah data inovasi milik ketua divisi selama status masih pending
+// @Tags Ketua Divisi Inovasi
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "ID Inovasi"
+// @Param request body controllers.CreateInovasiRequest true "Data update inovasi"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/inovasi/{id} [put]
 func UpdateInovasi(c *gin.Context) {
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)
@@ -278,6 +358,15 @@ func UpdateInovasi(c *gin.Context) {
 	})
 }
 
+// @Summary Delete inovasi
+// @Description Menghapus inovasi milik ketua divisi selama status masih pending
+// @Tags Ketua Divisi Inovasi
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID Inovasi"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/inovasi/{id} [delete]
 func DeleteInovasi(c *gin.Context) {
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)
