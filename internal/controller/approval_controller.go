@@ -13,6 +13,16 @@ type RejectRequest struct {
 	Catatan string `json:"catatan"`
 }
 
+// @Summary Approve kegiatan
+// @Description Menyetujui pengajuan kegiatan
+// @Tags Ketua Umum Kegiatan
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID Kegiatan"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/kegiatan/{id}/approve [patch]
 func ApproveKegiatan(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -50,6 +60,18 @@ func ApproveKegiatan(c *gin.Context) {
 	})
 }
 
+// @Summary Reject kegiatan
+// @Description Menolak pengajuan kegiatan disertai catatan
+// @Tags Ketua Umum Kegiatan
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "ID Kegiatan"
+// @Param request body controllers.RejectRequest true "Catatan penolakan"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/kegiatan/{id}/reject [patch]
 func RejectKegiatan(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

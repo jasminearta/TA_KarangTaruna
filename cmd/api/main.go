@@ -1,10 +1,21 @@
+// @title API Sistem Informasi Karang Taruna
+// @version 1.0
+// @description Dokumentasi API backend Sistem Informasi Karang Taruna
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
 package main
 
 import (
 	"ta-karangtaruna/database"
+	docs "ta-karangtaruna/docs"
 	controllers "ta-karangtaruna/internal/controller"
 	"ta-karangtaruna/internal/entities"
 	"ta-karangtaruna/internal/middleware"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +36,12 @@ func main() {
 
 	r := gin.Default()
 	r.Static("/uploads", "./uploads")
+
+	docs.SwaggerInfo.Title = "API Sistem Informasi Karang Taruna"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.BasePath = "/"
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(200, gin.H{

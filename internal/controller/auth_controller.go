@@ -9,8 +9,22 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Register(c *gin.Context) {
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
 
+// @Summary Register ketua divisi
+// @Description Mendaftarkan user dengan role ketua_divisi
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body entities.User true "Data register"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /register [post]
+func Register(c *gin.Context) {
 	var input entities.User
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -40,8 +54,17 @@ func Register(c *gin.Context) {
 	})
 }
 
+// @Summary Register ketua umum
+// @Description Mendaftarkan user dengan role ketua_umum
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body entities.User true "Data register ketua umum"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /register-ketua [post]
 func RegisterKetua(c *gin.Context) {
-
 	var input entities.User
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -71,12 +94,16 @@ func RegisterKetua(c *gin.Context) {
 	})
 }
 
+// @Summary Login user
+// @Description Login untuk ketua divisi atau ketua umum
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param request body controllers.LoginRequest true "Login payload"
+// @Success 200 {object} map[string]interface{}
+// @Router /login [post]
 func Login(c *gin.Context) {
-
-	var input struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var input LoginRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{

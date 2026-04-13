@@ -17,6 +17,15 @@ type CreateKegiatanRequest struct {
 	KategoriID      uint   `json:"kategori_id"`
 }
 
+// @Summary Create kegiatan
+// @Description Ketua divisi membuat pengajuan kegiatan
+// @Tags Ketua Divisi Kegiatan
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param request body controllers.CreateKegiatanRequest true "Create kegiatan payload"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/kegiatan [post]
 func CreateKegiatan(c *gin.Context) {
 	var req CreateKegiatanRequest
 
@@ -82,6 +91,18 @@ func GetKegiatan(c *gin.Context) {
 	})
 }
 
+// @Summary Get all public kegiatan
+// @Description Mengambil daftar kegiatan publik yang berstatus approved
+// @Tags Public Kegiatan
+// @Produce json
+// @Param page query int false "Page"
+// @Param limit query int false "Limit"
+// @Param search query string false "Search judul"
+// @Param kategori query string false "Kategori ID"
+// @Param sort query string false "Sort: terbaru atau terlama"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /kegiatan [get]
 func GetAllKegiatan(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	limitStr := c.DefaultQuery("limit", "100")
@@ -108,6 +129,20 @@ func GetAllKegiatan(c *gin.Context) {
 	})
 }
 
+// @Summary Get kegiatan saya
+// @Description Mengambil daftar kegiatan milik ketua divisi
+// @Tags Ketua Divisi Kegiatan
+// @Security BearerAuth
+// @Produce json
+// @Param page query int false "Page"
+// @Param limit query int false "Limit"
+// @Param search query string false "Search judul"
+// @Param kategori query string false "Kategori ID"
+// @Param status query string false "Status: pending, approved, rejected"
+// @Param sort query string false "Sort: terbaru atau terlama"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/kegiatan-saya [get]
 func GetKegiatanSaya(c *gin.Context) {
 	userID := c.MustGet("user_id").(uint)
 
@@ -163,6 +198,20 @@ func GetKegiatanSaya(c *gin.Context) {
 	})
 }
 
+// @Summary Get all kegiatan for ketua umum
+// @Description Mengambil semua kegiatan untuk ketua umum
+// @Tags Ketua Umum Kegiatan
+// @Security BearerAuth
+// @Produce json
+// @Param page query int false "Page"
+// @Param limit query int false "Limit"
+// @Param search query string false "Search judul"
+// @Param kategori query string false "Kategori ID"
+// @Param status query string false "Status: pending, approved, rejected"
+// @Param sort query string false "Sort: terbaru atau terlama"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/kegiatan [get]
 func GetAllKegiatanKetua(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
 	limitStr := c.DefaultQuery("limit", "100")
@@ -216,6 +265,15 @@ func GetAllKegiatanKetua(c *gin.Context) {
 	})
 }
 
+// @Summary Get kegiatan by user
+// @Description Mengambil kegiatan berdasarkan user tertentu
+// @Tags Ketua Umum Kegiatan
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID User"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/ketua/kegiatan/user/{id} [get]
 func GetKegiatanByUser(c *gin.Context) {
 	userIDParam := c.Param("id")
 	userID, _ := strconv.Atoi(userIDParam)
@@ -258,6 +316,14 @@ func GetKegiatanByUser(c *gin.Context) {
 	})
 }
 
+// @Summary Get detail kegiatan
+// @Description Mengambil detail kegiatan publik berdasarkan ID
+// @Tags Public Kegiatan
+// @Produce json
+// @Param id path int true "ID Kegiatan"
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /kegiatan/{id} [get]
 func GetDetailKegiatan(c *gin.Context) {
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)
@@ -294,6 +360,18 @@ func GetDetailKegiatan(c *gin.Context) {
 	})
 }
 
+// @Summary Update kegiatan
+// @Description Mengubah data kegiatan milik ketua divisi selama status masih pending
+// @Tags Ketua Divisi Kegiatan
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path int true "ID Kegiatan"
+// @Param request body controllers.CreateKegiatanRequest true "Data update kegiatan"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/kegiatan/{id} [put]
 func UpdateKegiatan(c *gin.Context) {
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)
@@ -328,6 +406,15 @@ func UpdateKegiatan(c *gin.Context) {
 	})
 }
 
+// @Summary Delete kegiatan
+// @Description Menghapus kegiatan milik ketua divisi selama status masih pending
+// @Tags Ketua Divisi Kegiatan
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID Kegiatan"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Router /api/kegiatan/{id} [delete]
 func DeleteKegiatan(c *gin.Context) {
 	idParam := c.Param("id")
 	id, _ := strconv.Atoi(idParam)

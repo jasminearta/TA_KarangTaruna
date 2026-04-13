@@ -9,6 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Get notifications
+// @Description Mengambil semua notifikasi milik user yang sedang login
+// @Tags Notifications
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/notifications [get]
 func GetNotifications(c *gin.Context) {
 	userID := c.MustGet("user_id").(uint)
 
@@ -32,6 +40,16 @@ func GetNotifications(c *gin.Context) {
 	})
 }
 
+// @Summary Read notification
+// @Description Menandai notifikasi sebagai sudah dibaca
+// @Tags Notifications
+// @Security BearerAuth
+// @Produce json
+// @Param id path int true "ID Notification"
+// @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 500 {object} map[string]interface{}
+// @Router /api/notifications/{id}/read [patch]
 func ReadNotification(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)

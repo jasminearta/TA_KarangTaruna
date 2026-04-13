@@ -23,7 +23,9 @@ func GetAllKegiatan(limit int, offset int, search string, kategori string, sort 
 
 	query := database.DB.
 		Preload("User").
-		Preload("Kategori")
+		Preload("Kategori").
+		Preload("FotoKegiatan").
+		Where("LOWER(status) = ?", "approved")
 
 	if search != "" {
 		query = query.Where("judul LIKE ?", "%"+search+"%")
@@ -33,18 +35,7 @@ func GetAllKegiatan(limit int, offset int, search string, kategori string, sort 
 		query = query.Where("kategori_id = ?", kategori)
 	}
 
-	if status != "" {
-		query = query.Where("LOWER(status) = ?", status)
-	}
-
-	if sort == "pending" || sort == "approved" || sort == "rejected" {
-		query = query.Where("LOWER(status) = ?", sort)
-	}
-
-	if status == "" && sort != "pending" && sort != "approved" && sort != "rejected" {
-		query = query.Where("LOWER(status) = ?", "approved")
-	}
-
+	// public hanya boleh sort urutan
 	if sort == "terbaru" {
 		query = query.Order("tanggal_diajukan DESC")
 	}
@@ -81,7 +72,7 @@ func GetDetailKegiatan(id uint) (entities.Kegiatan, error) {
 		Preload("User").
 		Preload("Kategori").
 		Preload("FotoKegiatan").
-		Where("status = ?", "approved").
+		Where("LOWER(status) = ?", "approved").
 		First(&kegiatan, id).Error
 
 	return kegiatan, err
@@ -184,11 +175,11 @@ func GetAllKegiatanKetuaUsecase(limit int, offset int, search string, kategori s
 	}
 
 	if sort == "terbaru" {
-		query = query.Order("tanggal_diajukan DESC")
+		query = query.Order("tanggal_diajukan DESC, id DESC")
 	}
 
 	if sort == "terlama" {
-		query = query.Order("tanggal_diajukan ASC")
+		query = query.Order("tanggal_diajukan ASC, id ASC")
 	}
 
 	err := query.
@@ -225,11 +216,11 @@ func GetKegiatanSayaUsecase(userID uint, limit int, offset int, search string, k
 	}
 
 	if sort == "terbaru" {
-		query = query.Order("tanggal_diajukan DESC")
+		query = query.Order("tanggal_diajukan DESC, id DESC")
 	}
 
 	if sort == "terlama" {
-		query = query.Order("tanggal_diajukan ASC")
+		query = query.Order("tanggal_diajukan ASC, id ASC")
 	}
 
 	err := query.

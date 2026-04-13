@@ -1,0 +1,738 @@
+basePath: /
+definitions:
+  controllers.ChangePasswordRequest:
+    properties:
+      password_baru:
+        type: string
+      password_lama:
+        type: string
+    type: object
+  controllers.CreateKegiatanRequest:
+    properties:
+      deskripsi:
+        type: string
+      judul:
+        type: string
+      kategori_id:
+        type: integer
+      tanggal_berjalan:
+        type: string
+      tanggal_diajukan:
+        type: string
+    type: object
+  controllers.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  controllers.RejectRequest:
+    properties:
+      catatan:
+        type: string
+    type: object
+  controllers.UpdateProfileRequest:
+    properties:
+      email:
+        type: string
+      nama:
+        type: string
+    type: object
+  entities.User:
+    properties:
+      email:
+        type: string
+      foto:
+        type: string
+      id:
+        type: integer
+      nama:
+        type: string
+      role:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: Dokumentasi API backend Sistem Informasi Karang Taruna
+  title: API Sistem Informasi Karang Taruna
+  version: "1.0"
+paths:
+  /api/kegiatan:
+    post:
+      consumes:
+      - application/json
+      description: Ketua divisi membuat pengajuan kegiatan
+      parameters:
+      - description: Create kegiatan payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateKegiatanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Create kegiatan
+      tags:
+      - Ketua Divisi Kegiatan
+  /api/kegiatan-saya:
+    get:
+      description: Mengambil daftar kegiatan milik ketua divisi
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search judul
+        in: query
+        name: search
+        type: string
+      - description: Kategori ID
+        in: query
+        name: kategori
+        type: string
+      - description: 'Status: pending, approved, rejected'
+        in: query
+        name: status
+        type: string
+      - description: 'Sort: terbaru atau terlama'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get kegiatan saya
+      tags:
+      - Ketua Divisi Kegiatan
+  /api/kegiatan/{id}:
+    delete:
+      description: Menghapus kegiatan milik ketua divisi selama status masih pending
+      parameters:
+      - description: ID Kegiatan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Delete kegiatan
+      tags:
+      - Ketua Divisi Kegiatan
+    put:
+      consumes:
+      - application/json
+      description: Mengubah data kegiatan milik ketua divisi selama status masih pending
+      parameters:
+      - description: ID Kegiatan
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data update kegiatan
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.CreateKegiatanRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update kegiatan
+      tags:
+      - Ketua Divisi Kegiatan
+  /api/kegiatan/{id}/foto:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload foto kegiatan setelah kegiatan disetujui
+      parameters:
+      - description: ID Kegiatan
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: File foto kegiatan
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Upload foto kegiatan
+      tags:
+      - Ketua Divisi Kegiatan
+  /api/ketua/kegiatan:
+    get:
+      description: Mengambil semua kegiatan untuk ketua umum
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search judul
+        in: query
+        name: search
+        type: string
+      - description: Kategori ID
+        in: query
+        name: kategori
+        type: string
+      - description: 'Status: pending, approved, rejected'
+        in: query
+        name: status
+        type: string
+      - description: 'Sort: terbaru atau terlama'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get all kegiatan for ketua umum
+      tags:
+      - Ketua Umum Kegiatan
+  /api/ketua/kegiatan/{id}/approve:
+    patch:
+      description: Menyetujui pengajuan kegiatan
+      parameters:
+      - description: ID Kegiatan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Approve kegiatan
+      tags:
+      - Ketua Umum Kegiatan
+  /api/ketua/kegiatan/{id}/reject:
+    patch:
+      consumes:
+      - application/json
+      description: Menolak pengajuan kegiatan disertai catatan
+      parameters:
+      - description: ID Kegiatan
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Catatan penolakan
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.RejectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Reject kegiatan
+      tags:
+      - Ketua Umum Kegiatan
+  /api/ketua/kegiatan/user/{id}:
+    get:
+      description: Mengambil kegiatan berdasarkan user tertentu
+      parameters:
+      - description: ID User
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get kegiatan by user
+      tags:
+      - Ketua Umum Kegiatan
+  /api/notifications:
+    get:
+      description: Mengambil semua notifikasi milik user yang sedang login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get notifications
+      tags:
+      - Notifications
+  /api/notifications/{id}/read:
+    patch:
+      description: Menandai notifikasi sebagai sudah dibaca
+      parameters:
+      - description: ID Notification
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Read notification
+      tags:
+      - Notifications
+  /api/profile:
+    get:
+      description: Mengambil profile user yang sedang login
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get profile
+      tags:
+      - Profile
+    put:
+      consumes:
+      - application/json
+      description: Mengubah nama dan email user yang sedang login
+      parameters:
+      - description: Data update profile
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.UpdateProfileRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update profile
+      tags:
+      - Profile
+  /api/profile/foto:
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload foto profile user yang sedang login
+      parameters:
+      - description: File foto profile
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Upload foto profile
+      tags:
+      - Profile
+  /api/profile/password:
+    put:
+      consumes:
+      - application/json
+      description: Mengubah password user yang sedang login
+      parameters:
+      - description: Data ubah password
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.ChangePasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Change password
+      tags:
+      - Profile
+  /kegiatan:
+    get:
+      description: Mengambil daftar kegiatan publik yang berstatus approved
+      parameters:
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Search judul
+        in: query
+        name: search
+        type: string
+      - description: Kategori ID
+        in: query
+        name: kategori
+        type: string
+      - description: 'Sort: terbaru atau terlama'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all public kegiatan
+      tags:
+      - Public Kegiatan
+  /kegiatan/{id}:
+    get:
+      description: Mengambil detail kegiatan publik berdasarkan ID
+      parameters:
+      - description: ID Kegiatan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get detail kegiatan
+      tags:
+      - Public Kegiatan
+  /kegiatan/{id}/foto:
+    get:
+      description: Mengambil daftar foto kegiatan berdasarkan ID kegiatan
+      parameters:
+      - description: ID Kegiatan
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get foto kegiatan
+      tags:
+      - Public Kegiatan
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login untuk ketua divisi atau ketua umum
+      parameters:
+      - description: Login payload
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Login user
+      tags:
+      - Auth
+  /register:
+    post:
+      consumes:
+      - application/json
+      description: Mendaftarkan user dengan role ketua_divisi
+      parameters:
+      - description: Data register
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register ketua divisi
+      tags:
+      - Auth
+  /register-ketua:
+    post:
+      consumes:
+      - application/json
+      description: Mendaftarkan user dengan role ketua_umum
+      parameters:
+      - description: Data register ketua umum
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/entities.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Register ketua umum
+      tags:
+      - Auth
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

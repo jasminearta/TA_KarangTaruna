@@ -54,7 +54,8 @@ func GetAllInovasi(limit int, offset int, search string, kategori string, sort s
 	query := database.DB.
 		Preload("User").
 		Preload("Kategori").
-		Preload("FotoInovasi")
+		Preload("FotoInovasi").
+		Where("LOWER(status) = ?", "approved")
 
 	if search != "" {
 		query = query.Where("judul LIKE ?", "%"+search+"%")
@@ -64,18 +65,7 @@ func GetAllInovasi(limit int, offset int, search string, kategori string, sort s
 		query = query.Where("kategori_id = ?", kategori)
 	}
 
-	if status != "" {
-		query = query.Where("LOWER(status) = ?", status)
-	}
-
-	if sort == "pending" || sort == "approved" || sort == "rejected" {
-		query = query.Where("LOWER(status) = ?", sort)
-	}
-
-	if status == "" && sort != "pending" && sort != "approved" && sort != "rejected" {
-		query = query.Where("LOWER(status) = ?", "approved")
-	}
-
+	// public hanya boleh sort urutan
 	if sort == "terbaru" {
 		query = query.Order("tanggal_diajukan DESC")
 	}
@@ -110,7 +100,8 @@ func GetDetailInovasi(id uint) (entities.Inovasi, error) {
 	err := database.DB.
 		Preload("User").
 		Preload("Kategori").
-		Where("status = ?", "approved").
+		Preload("FotoInovasi").
+		Where("LOWER(status) = ?", "approved").
 		First(&inovasi, id).Error
 
 	return inovasi, err
@@ -208,11 +199,11 @@ func GetAllInovasiKetuaUsecase(limit int, offset int, search string, kategori st
 	}
 
 	if sort == "terbaru" {
-		query = query.Order("tanggal_diajukan DESC")
+		query = query.Order("tanggal_diajukan DESC, id DESC")
 	}
 
 	if sort == "terlama" {
-		query = query.Order("tanggal_diajukan ASC")
+		query = query.Order("tanggal_diajukan ASC, id ASC")
 	}
 
 	err := query.
@@ -249,11 +240,11 @@ func GetInovasiSayaUsecase(userID uint, limit int, offset int, search string, ka
 	}
 
 	if sort == "terbaru" {
-		query = query.Order("tanggal_diajukan DESC")
+		query = query.Order("tanggal_diajukan DESC, id DESC")
 	}
 
 	if sort == "terlama" {
-		query = query.Order("tanggal_diajukan ASC")
+		query = query.Order("tanggal_diajukan ASC, id ASC")
 	}
 
 	err := query.
