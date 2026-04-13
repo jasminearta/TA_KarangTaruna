@@ -8,6 +8,7 @@
 package main
 
 import (
+	"os"
 	"ta-karangtaruna/database"
 	docs "ta-karangtaruna/docs"
 	controllers "ta-karangtaruna/internal/controller"
@@ -53,10 +54,7 @@ func main() {
 	r.POST("/register-ketua", controllers.RegisterKetua)
 	r.POST("/login", controllers.Login)
 
-	// ========================
 	// PUBLIC ROUTES
-	// ========================
-
 	r.GET("/kegiatan", controllers.GetAllKegiatan)
 	r.GET("/kegiatan/:id", controllers.GetDetailKegiatan)
 	r.GET("/kegiatan/:id/foto", controllers.GetFotoKegiatan)
@@ -65,10 +63,7 @@ func main() {
 	r.GET("/inovasi/:id", controllers.GetDetailInovasi)
 	r.GET("/inovasi/:id/foto", controllers.GetFotoInovasi)
 
-	// ========================
-	// AUTH ROUTES (LOGIN REQUIRED)
-	// ========================
-
+	// AUTH ROUTES
 	api := r.Group("/api")
 	api.Use(middleware.AuthMiddleware())
 	{
@@ -81,10 +76,7 @@ func main() {
 		api.PATCH("/notifications/:id/read", controllers.ReadNotification)
 	}
 
-	// ========================
 	// KETUA DIVISI ROUTES
-	// ========================
-
 	ketuaDivisi := r.Group("/api")
 	ketuaDivisi.Use(middleware.AuthMiddleware(), middleware.OnlyKetuaDivisi())
 	{
@@ -101,10 +93,7 @@ func main() {
 		ketuaDivisi.POST("/inovasi/:id/foto", controllers.UploadFotoInovasi)
 	}
 
-	// ========================
 	// KETUA UMUM ROUTES
-	// ========================
-
 	ketuaUmum := r.Group("/api/ketua")
 	ketuaUmum.Use(middleware.AuthMiddleware(), middleware.OnlyKetuaUmum())
 	{
@@ -123,5 +112,10 @@ func main() {
 		ketuaUmum.PATCH("/inovasi/:id/reject", controllers.RejectInovasi)
 	}
 
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	r.Run(":" + port)
 }
