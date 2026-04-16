@@ -431,6 +431,28 @@ paths:
       summary: Upload foto kegiatan
       tags:
       - Ketua Divisi Kegiatan
+  /api/ketua/dashboard:
+    get:
+      description: Mengambil data dashboard ketua umum berupa total kegiatan, total
+        inovasi, total pengguna, serta jumlah data berdasarkan status
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get dashboard ketua umum
+      tags:
+      - Ketua Umum Dashboard
   /api/ketua/inovasi:
     get:
       description: Mengambil semua inovasi untuk ketua umum

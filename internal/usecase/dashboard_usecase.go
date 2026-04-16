@@ -6,32 +6,69 @@ import (
 )
 
 type DashboardData struct {
-	TotalKegiatan int64 `json:"total_kegiatan"`
-	Pending       int64 `json:"pending"`
-	Approved      int64 `json:"approved"`
-	Rejected      int64 `json:"rejected"`
-	TotalUsers    int64 `json:"total_users"`
+	TotalKegiatan    int64 `json:"total_kegiatan"`
+	PendingKegiatan  int64 `json:"pending_kegiatan"`
+	ApprovedKegiatan int64 `json:"approved_kegiatan"`
+	RejectedKegiatan int64 `json:"rejected_kegiatan"`
+
+	TotalInovasi    int64 `json:"total_inovasi"`
+	PendingInovasi  int64 `json:"pending_inovasi"`
+	ApprovedInovasi int64 `json:"approved_inovasi"`
+	RejectedInovasi int64 `json:"rejected_inovasi"`
+
+	TotalUsers int64 `json:"total_users"`
 }
 
 func GetDashboardData() (DashboardData, error) {
-
 	var data DashboardData
 
-	database.DB.Model(&entities.Kegiatan{}).Count(&data.TotalKegiatan)
+	if err := database.DB.Model(&entities.Kegiatan{}).Count(&data.TotalKegiatan).Error; err != nil {
+		return data, err
+	}
 
-	database.DB.Model(&entities.Kegiatan{}).
-		Where("status = ?", "pending").
-		Count(&data.Pending)
+	if err := database.DB.Model(&entities.Kegiatan{}).
+		Where("LOWER(status) = ?", "pending").
+		Count(&data.PendingKegiatan).Error; err != nil {
+		return data, err
+	}
 
-	database.DB.Model(&entities.Kegiatan{}).
-		Where("status = ?", "approved").
-		Count(&data.Approved)
+	if err := database.DB.Model(&entities.Kegiatan{}).
+		Where("LOWER(status) = ?", "approved").
+		Count(&data.ApprovedKegiatan).Error; err != nil {
+		return data, err
+	}
 
-	database.DB.Model(&entities.Kegiatan{}).
-		Where("status = ?", "rejected").
-		Count(&data.Rejected)
+	if err := database.DB.Model(&entities.Kegiatan{}).
+		Where("LOWER(status) = ?", "rejected").
+		Count(&data.RejectedKegiatan).Error; err != nil {
+		return data, err
+	}
 
-	database.DB.Model(&entities.User{}).Count(&data.TotalUsers)
+	if err := database.DB.Model(&entities.Inovasi{}).Count(&data.TotalInovasi).Error; err != nil {
+		return data, err
+	}
+
+	if err := database.DB.Model(&entities.Inovasi{}).
+		Where("LOWER(status) = ?", "pending").
+		Count(&data.PendingInovasi).Error; err != nil {
+		return data, err
+	}
+
+	if err := database.DB.Model(&entities.Inovasi{}).
+		Where("LOWER(status) = ?", "approved").
+		Count(&data.ApprovedInovasi).Error; err != nil {
+		return data, err
+	}
+
+	if err := database.DB.Model(&entities.Inovasi{}).
+		Where("LOWER(status) = ?", "rejected").
+		Count(&data.RejectedInovasi).Error; err != nil {
+		return data, err
+	}
+
+	if err := database.DB.Model(&entities.User{}).Count(&data.TotalUsers).Error; err != nil {
+		return data, err
+	}
 
 	return data, nil
 }

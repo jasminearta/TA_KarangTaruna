@@ -571,6 +571,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/ketua/dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Mengambil data dashboard ketua umum berupa total kegiatan, total inovasi, total pengguna, serta jumlah data berdasarkan status",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ketua Umum Dashboard"
+                ],
+                "summary": "Get dashboard ketua umum",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/api/ketua/inovasi": {
             "get": {
                 "security": [
