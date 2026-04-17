@@ -40,7 +40,13 @@ func main() {
 	r := gin.Default()
 
 	allowedOriginsEnv := os.Getenv("ALLOWED_ORIGINS")
-	allowedOrigins := []string{}
+	allowedOrigins := []string{
+		"http://localhost:3000",
+		"http://localhost:5173",
+		"http://localhost:8000",
+		"https://takarangtaruna-production.up.railway.app",
+	}
+
 	if allowedOriginsEnv != "" {
 		allowedOrigins = strings.Split(allowedOriginsEnv, ",")
 		for i := range allowedOrigins {
@@ -132,6 +138,7 @@ func main() {
 
 		ketuaUmum.GET("/users", controllers.GetAllUsers)
 		ketuaUmum.PATCH("/users/:id/status", controllers.UpdateUserStatus)
+
 		ketuaUmum.GET("/kegiatan", controllers.GetAllKegiatanKetua)
 		ketuaUmum.GET("/kegiatan/user/:id", controllers.GetKegiatanByUser)
 		ketuaUmum.PATCH("/kegiatan/:id/approve", controllers.ApproveKegiatan)
