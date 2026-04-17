@@ -9,20 +9,18 @@ package main
 
 import (
 	"os"
+	"strings"
 	"ta-karangtaruna/database"
 	docs "ta-karangtaruna/docs"
 	controllers "ta-karangtaruna/internal/controller"
 	"ta-karangtaruna/internal/entities"
 	"ta-karangtaruna/internal/middleware"
-
-	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-
-	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -40,6 +38,7 @@ func main() {
 	)
 
 	r := gin.Default()
+
 	allowedOriginsEnv := os.Getenv("ALLOWED_ORIGINS")
 	allowedOrigins := []string{}
 	if allowedOriginsEnv != "" {
@@ -72,9 +71,19 @@ func main() {
 		})
 	})
 
-	r.POST("/register", controllers.Register)
-	r.POST("/register-ketua", controllers.RegisterKetua)
 	r.POST("/login", controllers.Login)
+
+	r.POST("/register",
+		middleware.AuthMiddleware(),
+		middleware.OnlyKetuaUmum(),
+		controllers.Register,
+	)
+
+	r.POST("/register-ketua",
+		middleware.AuthMiddleware(),
+		middleware.OnlyKetuaUmum(),
+		controllers.RegisterKetua,
+	)
 
 	// PUBLIC ROUTES
 	r.GET("/kegiatan", controllers.GetAllKegiatan)
