@@ -15,6 +15,10 @@ import (
 	"ta-karangtaruna/internal/entities"
 	"ta-karangtaruna/internal/middleware"
 
+	"strings"
+	"time"
+
+	"github.com/gin-contrib/cors"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
@@ -36,6 +40,24 @@ func main() {
 	)
 
 	r := gin.Default()
+	allowedOriginsEnv := os.Getenv("ALLOWED_ORIGINS")
+	allowedOrigins := []string{}
+	if allowedOriginsEnv != "" {
+		allowedOrigins = strings.Split(allowedOriginsEnv, ",")
+		for i := range allowedOrigins {
+			allowedOrigins[i] = strings.TrimSpace(allowedOrigins[i])
+		}
+	}
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     allowedOrigins,
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	r.Static("/uploads", "./uploads")
 
 	docs.SwaggerInfo.Title = "API Sistem Informasi Karang Taruna"
