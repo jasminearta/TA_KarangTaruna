@@ -17,6 +17,7 @@ type LoginRequest struct {
 // @Summary Register ketua divisi
 // @Description Mendaftarkan user dengan role ketua_divisi
 // @Tags Auth
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param request body entities.User true "Data register"
@@ -37,7 +38,6 @@ func Register(c *gin.Context) {
 		input.Email,
 		input.Password,
 	)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -46,10 +46,11 @@ func Register(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User berhasil register",
 		"data": gin.H{
-			"id":    newUser.ID,
-			"nama":  newUser.Nama,
-			"email": newUser.Email,
-			"role":  newUser.Role,
+			"id":     newUser.ID,
+			"nama":   newUser.Nama,
+			"email":  newUser.Email,
+			"role":   newUser.Role,
+			"status": newUser.Status,
 		},
 	})
 }
@@ -57,6 +58,7 @@ func Register(c *gin.Context) {
 // @Summary Register ketua umum
 // @Description Mendaftarkan user dengan role ketua_umum
 // @Tags Auth
+// @Security BearerAuth
 // @Accept json
 // @Produce json
 // @Param request body entities.User true "Data register ketua umum"
@@ -77,7 +79,6 @@ func RegisterKetua(c *gin.Context) {
 		input.Email,
 		input.Password,
 	)
-
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -86,10 +87,11 @@ func RegisterKetua(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Ketua berhasil dibuat",
 		"data": gin.H{
-			"id":    newUser.ID,
-			"nama":  newUser.Nama,
-			"email": newUser.Email,
-			"role":  newUser.Role,
+			"id":     newUser.ID,
+			"nama":   newUser.Nama,
+			"email":  newUser.Email,
+			"role":   newUser.Role,
+			"status": newUser.Status,
 		},
 	})
 }
@@ -101,6 +103,9 @@ func RegisterKetua(c *gin.Context) {
 // @Produce json
 // @Param request body controllers.LoginRequest true "Login payload"
 // @Success 200 {object} map[string]interface{}
+// @Failure 400 {object} map[string]interface{}
+// @Failure 401 {object} map[string]interface{}
+// @Failure 403 {object} map[string]interface{}
 // @Router /login [post]
 func Login(c *gin.Context) {
 	var input LoginRequest
@@ -114,6 +119,14 @@ func Login(c *gin.Context) {
 
 	user, token, err := usecases.LoginUser(input.Email, input.Password)
 	if err != nil {
+		if err.Error() == "akun nonaktif, silakan hubungi ketua umum" ||
+			err.Error() == "akun alumni tidak dapat mengakses sistem" {
+			c.JSON(http.StatusForbidden, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": err.Error(),
 		})
@@ -123,11 +136,12 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login berhasil",
 		"user": gin.H{
-			"id":    user.ID,
-			"nama":  user.Nama,
-			"email": user.Email,
-			"foto":  user.Foto,
-			"role":  user.Role,
+			"id":     user.ID,
+			"nama":   user.Nama,
+			"email":  user.Email,
+			"foto":   user.Foto,
+			"role":   user.Role,
+			"status": user.Status,
 		},
 		"token": token,
 	})

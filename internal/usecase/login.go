@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 
 	"ta-karangtaruna/database"
 	"ta-karangtaruna/internal/entities"
@@ -11,29 +10,29 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func LoginUser(email string, password string) (entities.User, string, error) {
+func LoginUser(email, password string) (*entities.User, string, error) {
 	var user entities.User
 
-	err := database.DB.Where("email = ?", email).First(&user).Error
-	if err != nil {
-		fmt.Println("USER TIDAK DITEMUKAN")
-		return user, "", errors.New("email tidak ditemukan")
+	if err := database.DB.Where("email = ?", email).First(&user).Error; err != nil {
+		return nil, "", errors.New("email atau password salah")
 	}
 
-	fmt.Println("EMAIL DB:", user.Email)
-	fmt.Println("PASSWORD HASH DB:", user.Password)
-	fmt.Println("PASSWORD INPUT:", password)
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, "", errors.New("email atau password salah")
+	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if err != nil {
-		fmt.Println("PASSWORD TIDAK MATCH")
-		return user, "", errors.New("password salah")
+	if user.Status == "nonaktif" {
+		return nil, "", errors.New("akun nonaktif, silakan hubungi ketua umum")
+	}
+
+	if user.Status == "alumni" {
+		return nil, "", errors.New("akun alumni tidak dapat mengakses sistem")
 	}
 
 	token, err := utils.GenerateToken(user.ID, user.Role)
 	if err != nil {
-		return user, "", err
+		return nil, "", err
 	}
 
-	return user, token, nil
+	return &user, token, nil
 }

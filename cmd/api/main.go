@@ -131,7 +131,7 @@ func main() {
 		ketuaUmum.GET("/dashboard", controllers.GetDashboardKetua)
 
 		ketuaUmum.GET("/users", controllers.GetAllUsers)
-
+		ketuaUmum.PATCH("/users/:id/status", controllers.UpdateUserStatus)
 		ketuaUmum.GET("/kegiatan", controllers.GetAllKegiatanKetua)
 		ketuaUmum.GET("/kegiatan/user/:id", controllers.GetKegiatanByUser)
 		ketuaUmum.PATCH("/kegiatan/:id/approve", controllers.ApproveKegiatan)

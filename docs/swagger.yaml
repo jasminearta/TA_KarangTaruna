@@ -50,6 +50,13 @@ definitions:
       nama:
         type: string
     type: object
+  controllers.UpdateUserStatusRequest:
+    properties:
+      status:
+        type: string
+    required:
+    - status
+    type: object
   entities.User:
     properties:
       email:
@@ -61,6 +68,8 @@ definitions:
       nama:
         type: string
       role:
+        type: string
+      status:
         type: string
     type: object
 info:
@@ -743,6 +752,51 @@ paths:
       summary: Get kegiatan by user
       tags:
       - Ketua Umum Kegiatan
+  /api/ketua/users/{id}/status:
+    patch:
+      consumes:
+      - application/json
+      description: Ketua umum mengubah status user menjadi aktif, nonaktif, atau alumni
+      parameters:
+      - description: ID User
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Data status user
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controllers.UpdateUserStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update status user
+      tags:
+      - Ketua Umum User
   /api/notifications:
     get:
       description: Mengambil semua notifikasi milik user yang sedang login
@@ -1115,6 +1169,21 @@ paths:
           schema:
             additionalProperties: true
             type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
       summary: Login user
       tags:
       - Auth
@@ -1148,6 +1217,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Register ketua divisi
       tags:
       - Auth
@@ -1181,6 +1252,8 @@ paths:
           schema:
             additionalProperties: true
             type: object
+      security:
+      - BearerAuth: []
       summary: Register ketua umum
       tags:
       - Auth
