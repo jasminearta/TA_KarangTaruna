@@ -8,11 +8,11 @@ import (
 )
 
 func RegisterUser(nama string, email string, password string) (entities.User, error) {
-
 	user := entities.User{
-		Nama:  nama,
-		Email: email,
-		Role:  "anggota", // ✅ otomatis
+		Nama:   nama,
+		Email:  email,
+		Role:   "ketua_divisi",
+		Status: "aktif",
 	}
 
 	// hash password
@@ -26,12 +26,13 @@ func RegisterUser(nama string, email string, password string) (entities.User, er
 	err = database.DB.Create(&user).Error
 	return user, err
 }
-func RegisterKetua(nama string, email string, password string) (entities.User, error) {
 
+func RegisterKetua(nama string, email string, password string) (entities.User, error) {
 	user := entities.User{
-		Nama:  nama,
-		Email: email,
-		Role:  "ketua",
+		Nama:   nama,
+		Email:  email,
+		Role:   "ketua_umum",
+		Status: "aktif",
 	}
 
 	// hash password
@@ -43,6 +44,5 @@ func RegisterKetua(nama string, email string, password string) (entities.User, e
 	user.Password = string(hashedPassword)
 
 	err = database.DB.Create(&user).Error
-
 	return user, err
 }
