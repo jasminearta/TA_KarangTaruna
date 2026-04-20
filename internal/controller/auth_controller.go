@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
-	"ta-karangtaruna/internal/entities"
 	usecases "ta-karangtaruna/internal/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +12,11 @@ import (
 type LoginRequest struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
+}
+type RegisterRequest struct {
+	Nama     string `json:"nama" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // @Summary Register ketua divisi
@@ -26,12 +31,16 @@ type LoginRequest struct {
 // @Failure 500 {object} map[string]interface{}
 // @Router /register [post]
 func Register(c *gin.Context) {
-	var input entities.User
+	var input RegisterRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	fmt.Println("REGISTER NAMA:", input.Nama)
+	fmt.Println("REGISTER EMAIL:", input.Email)
+	fmt.Println("REGISTER PASSWORD:", input.Password)
 
 	newUser, err := usecases.RegisterUser(
 		input.Nama,
@@ -67,12 +76,16 @@ func Register(c *gin.Context) {
 // @Failure 500 {object} map[string]interface{}
 // @Router /register-ketua [post]
 func RegisterKetua(c *gin.Context) {
-	var input entities.User
+	var input RegisterRequest
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	fmt.Println("REGISTER KETUA NAMA:", input.Nama)
+	fmt.Println("REGISTER KETUA EMAIL:", input.Email)
+	fmt.Println("REGISTER KETUA PASSWORD:", input.Password)
 
 	newUser, err := usecases.RegisterKetua(
 		input.Nama,
